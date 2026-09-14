@@ -99,6 +99,6 @@ List<MenuWarung> daftarMenu = [
     porsiTersisa: 8,
     gambar: 'lib/assets/images/roti_bakar_coklat.jpeg',
     deskripsi:
-        'Roti bakar hangat dengan isian cokelat manis dan tekstur yang renyah.',
+        'Roti bakar hangat dengan isian coklat manis dan tekstur yang renyah.',
   ),
 ];
