@@ -551,7 +551,7 @@ class _HalamanMenuState extends State<HalamanMenu> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Warung Kita',
+              'Warung Sedap',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -602,7 +602,7 @@ class _HalamanMenuState extends State<HalamanMenu> {
                       ),
                       const SizedBox(height: 3),
                       const Text(
-                        'Pilih menu favoritmu dan atur jumlah pesanan.',
+                        'Pilih menu favorit anda dan atur jumlah pesanan.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Color(0xFF727A77),
