@@ -6,7 +6,7 @@ List<MenuWarung> daftarMenu = [
     kategori: 'Makanan',
     harga: 15000,
     tersedia: true,
-    porsiTersisa: 8,
+    porsiTersisa: 15,
     gambar: 'lib/assets/images/Ayam_Bakar_Madu.jpeg',
     deskripsi:
         'Ayam bakar dengan bumbu manis gurih dan aroma madu yang khas.',
@@ -66,7 +66,7 @@ List<MenuWarung> daftarMenu = [
     kategori: 'Camilan',
     harga: 10000,
     tersedia: true,
-    porsiTersisa: 8,
+    porsiTersisa: 11,
     gambar: 'lib/assets/images/tahu_walik.jpeg',
     deskripsi:
         'Camilan tahu dengan tekstur renyah di luar dan isian gurih di dalam.',
