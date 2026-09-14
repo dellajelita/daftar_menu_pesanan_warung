@@ -885,7 +885,7 @@ class _HalamanMenuState extends State<HalamanMenu> {
                               jumlahKolom,
                           crossAxisSpacing: 14,
                           mainAxisSpacing: 14,
-                          mainAxisExtent: 285,
+                          mainAxisExtent: 265,
                         ),
                         itemBuilder:
                             (context, index) {
