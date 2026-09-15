@@ -185,7 +185,6 @@ class _HalamanMenuState extends State<HalamanMenu> {
 
   void tampilkanPeringatanStok(Pesanan pesanan) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
