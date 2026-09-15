@@ -462,16 +462,302 @@ class _HalamanMenuState extends State<HalamanMenu> {
     );
   }
 
+  Widget tampilanKosong() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          18,
+          30,
+          18,
+          30,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 110,
+              height: 110,
+              decoration: const BoxDecoration(
+                color: Color(0xFFE9EFED),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 52,
+                color: Color(0xFF5E7D79),
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Menu tidak ditemukan',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF252929),
+              ),
+            ),
+            const SizedBox(height: 7),
+            const Text(
+              'Coba gunakan kata kunci atau filter lain.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF858B8A),
+                height: 1.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget gridMenu(List<Pesanan> menuTampil) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int jumlahKolom;
+
+        if (constraints.maxWidth < 600) {
+          jumlahKolom = 1;
+        } else if (constraints.maxWidth < 900) {
+          jumlahKolom = 2;
+        } else {
+          jumlahKolom = 3;
+        }
+
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(
+            18,
+            10,
+            18,
+            20,
+          ),
+          itemCount: menuTampil.length,
+          gridDelegate:
+              SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: jumlahKolom,
+            crossAxisSpacing: 14,
+            mainAxisSpacing: 14,
+            mainAxisExtent: 265,
+          ),
+          itemBuilder: (context, index) {
+            final Pesanan pesanan =
+                menuTampil[index];
+
+            return MenuCard(
+              menu: pesanan.menu,
+              jumlahPesanan: pesanan.jumlah,
+              onTambah: () {
+                tambahPesanan(pesanan);
+              },
+              onKurang: () {
+                kurangPesanan(pesanan);
+              },
+              onBatasStok: () {
+                tampilkanPeringatanStok(pesanan);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget ringkasanPesanan({
+    required bool adaPesanan,
+    required int subtotalPesanan,
+    required int diskonPesanan,
+    required int totalAkhir,
+  }) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      child: adaPesanan
+          ? Padding(
+              key: const ValueKey('total-pesanan'),
+              padding: const EdgeInsets.fromLTRB(
+                14,
+                0,
+                14,
+                14,
+              ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(
+                  15,
+                  12,
+                  15,
+                  12,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1F5C5B),
+                  borderRadius:
+                      BorderRadius.circular(18),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 16,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(
+                              alpha: 0.15,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.receipt_long_rounded,
+                            size: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        const Expanded(
+                          child: Text(
+                            'Ringkasan Pesanan',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding:
+                              const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                Colors.white.withValues(
+                              alpha: 0.12,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${hitungJumlahItem()} item',
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFDCEBE8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Subtotal',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFFCDE0DC),
+                          ),
+                        ),
+                        Text(
+                          'Rp${formatRupiah(subtotalPesanan)}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          diskonPesanan > 0
+                              ? 'Diskon 10%'
+                              : 'Diskon 10% mulai 5 porsi',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: diskonPesanan > 0
+                                ? const Color(0xFFFFD7C8)
+                                : const Color(0xFFCDE0DC),
+                          ),
+                        ),
+                        Text(
+                          diskonPesanan > 0
+                              ? '-Rp${formatRupiah(diskonPesanan)}'
+                              : 'Rp0',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: diskonPesanan > 0
+                                ? const Color(0xFFFFD7C8)
+                                : const Color(0xFFCDE0DC),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      height: 1,
+                      color: Colors.white.withValues(
+                        alpha: 0.12,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment:
+                          MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Total Pesanan',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFFCDE0DC),
+                          ),
+                        ),
+                        Text(
+                          'Rp${formatRupiah(totalAkhir)}',
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const SizedBox(
+              key: ValueKey('tanpa-total'),
+            ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final List<Pesanan> menuTampil =
         daftarMenuTampil();
 
     final int jumlahTersedia =
-        hitungMenuTersedia(menuTampil);
+        hitungMenuTersedia(daftarPesanan);
 
     final int jumlahHabis =
-        hitungMenuHabis(menuTampil);
+        hitungMenuHabis(daftarPesanan);
 
     final bool adaPesanan =
         hitungJumlahItem() > 0;
@@ -572,563 +858,210 @@ class _HalamanMenuState extends State<HalamanMenu> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.only(
-                bottom: adaPesanan ? 150 : 20,
-              ),
+          Container(
+            color: const Color(0xFFF3E6D5),
+            padding: const EdgeInsets.fromLTRB(
+              18,
+              14,
+              18,
+              0,
+            ),
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
-                Container(
-                  color: const Color(0xFFF3E6D5),
-                  padding: const EdgeInsets.fromLTRB(
-                    18,
-                    14,
-                    18,
-                    0,
+                const Text(
+                  'Mau makan apa hari ini?',
+                  style: TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF252929),
+                    height: 1.15,
                   ),
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                ),
+                const SizedBox(height: 3),
+                const Text(
+                  'Pilih menu favorit anda dan atur jumlah pesanan.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF727A77),
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(height: 11),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        onChanged: (value) {
+                          setState(() {
+                            kataPencarian = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                          hintText:
+                              'Cari menu favoritmu...',
+                          hintStyle: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF9CA3A1),
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search_rounded,
+                            size: 21,
+                            color: Color(0xFF1F5C5B),
+                          ),
+                          filled: true,
+                          fillColor:
+                              const Color(0xFFFFFCF8),
+                          border: OutlineInputBorder(
+                            borderRadius:
+                                BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding:
+                              const EdgeInsets.symmetric(
+                            vertical: 0,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 9),
+                    Material(
+                      color: const Color(0xFFFFFCF8),
+                      borderRadius:
+                          BorderRadius.circular(15),
+                      child: InkWell(
+                        borderRadius:
+                            BorderRadius.circular(15),
+                        onTap: bukaFilter,
+                        child: const SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Icon(
+                            Icons.tune_rounded,
+                            color: Color(0xFF1F5C5B),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 7),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
                     children: [
+                      kategoriChip(
+                        'Semua',
+                        Icons.apps_rounded,
+                      ),
+                      const SizedBox(width: 7),
+                      kategoriChip(
+                        'Makanan',
+                        Icons.restaurant_rounded,
+                      ),
+                      const SizedBox(width: 7),
+                      kategoriChip(
+                        'Minuman',
+                        Icons.local_drink_rounded,
+                      ),
+                      const SizedBox(width: 7),
+                      kategoriChip(
+                        'Camilan',
+                        Icons.cookie_rounded,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 7),
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFCF8),
+                    borderRadius:
+                        BorderRadius.circular(15),
+                    border: Border.all(
+                      color: const Color(0xFFE9DCCB),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 28,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          color:
+                              const Color(0xFFE5F0ED),
+                          borderRadius:
+                              BorderRadius.circular(9),
+                        ),
+                        child: const Icon(
+                          Icons.restaurant_menu_rounded,
+                          size: 15,
+                          color: Color(0xFF1F5C5B),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
                       const Text(
-                        'Mau makan apa hari ini?',
+                        'Menu',
                         style: TextStyle(
-                          fontSize: 23,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF252929),
-                          height: 1.15,
                         ),
                       ),
-                      const SizedBox(height: 3),
-                      const Text(
-                        'Pilih menu favorit anda dan atur jumlah pesanan.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF727A77),
-                          height: 1.25,
+                      const Spacer(),
+                      Text(
+                        '$jumlahTersedia tersedia',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF1F5C5B),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      const SizedBox(height: 11),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller:
-                                  searchController,
-                              onChanged: (value) {
-                                setState(() {
-                                  kataPencarian =
-                                      value;
-                                });
-                              },
-                              decoration:
-                                  InputDecoration(
-                                hintText:
-                                    'Cari menu favoritmu...',
-                                hintStyle:
-                                    const TextStyle(
-                                  fontSize: 12,
-                                  color:
-                                      Color(0xFF9CA3A1),
-                                ),
-                                prefixIcon:
-                                    const Icon(
-                                  Icons.search_rounded,
-                                  size: 21,
-                                  color:
-                                      Color(0xFF1F5C5B),
-                                ),
-                                filled: true,
-                                fillColor:
-                                    const Color(0xFFFFFCF8),
-                                border:
-                                    OutlineInputBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                    16,
-                                  ),
-                                  borderSide:
-                                      BorderSide.none,
-                                ),
-                                contentPadding:
-                                    const EdgeInsets
-                                        .symmetric(
-                                  vertical: 0,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 9),
-                          Material(
-                            color:
-                                const Color(0xFFFFFCF8),
-                            borderRadius:
-                                BorderRadius.circular(15),
-                            child: InkWell(
-                              borderRadius:
-                                  BorderRadius.circular(15),
-                              onTap: bukaFilter,
-                              child: const SizedBox(
-                                width: 50,
-                                height: 50,
-                                child: Icon(
-                                  Icons.tune_rounded,
-                                  color:
-                                      Color(0xFF1F5C5B),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 7),
-                      SingleChildScrollView(
-                        scrollDirection:
-                            Axis.horizontal,
-                        child: Row(
-                          children: [
-                            kategoriChip(
-                              'Semua',
-                              Icons.apps_rounded,
-                            ),
-                            const SizedBox(width: 7),
-                            kategoriChip(
-                              'Makanan',
-                              Icons.restaurant_rounded,
-                            ),
-                            const SizedBox(width: 7),
-                            kategoriChip(
-                              'Minuman',
-                              Icons.local_drink_rounded,
-                            ),
-                            const SizedBox(width: 7),
-                            kategoriChip(
-                              'Camilan',
-                              Icons.cookie_rounded,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 7),
                       Container(
-                        width: double.infinity,
-                        padding:
+                        margin:
                             const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 10,
+                          horizontal: 8,
                         ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFFCF8),
-                          borderRadius:
-                              BorderRadius.circular(15),
-                          border: Border.all(
-                            color: const Color(0xFFE9DCCB),
-                          ),
+                        width: 4,
+                        height: 4,
+                        decoration:
+                            const BoxDecoration(
+                          color: Color(0xFFB4BCBA),
+                          shape: BoxShape.circle,
                         ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                color:
-                                    const Color(0xFFE5F0ED),
-                                borderRadius:
-                                    BorderRadius.circular(9),
-                              ),
-                              child: const Icon(
-                                Icons.restaurant_menu_rounded,
-                                size: 15,
-                                color:
-                                    Color(0xFF1F5C5B),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Menu',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight:
-                                    FontWeight.bold,
-                                color:
-                                    Color(0xFF252929),
-                              ),
-                            ),
-                            const Spacer(),
-                            Text(
-                              '$jumlahTersedia tersedia',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color:
-                                    Color(0xFF1F5C5B),
-                                fontWeight:
-                                    FontWeight.w600,
-                              ),
-                            ),
-                            Container(
-                              margin:
-                                  const EdgeInsets.symmetric(
-                                horizontal: 8,
-                              ),
-                              width: 4,
-                              height: 4,
-                              decoration:
-                                  const BoxDecoration(
-                                color:
-                                    Color(0xFFB4BCBA),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            Text(
-                              '$jumlahHabis habis',
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color:
-                                    Color(0xFF858B8A),
-                                fontWeight:
-                                    FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                      ),
+                      Text(
+                        '$jumlahHabis habis',
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF858B8A),
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
-                if (menuTampil.isEmpty)
-                  Padding(
-                    padding:
-                        const EdgeInsets.fromLTRB(
-                      18,
-                      55,
-                      18,
-                      40,
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 110,
-                          height: 110,
-                          decoration:
-                              const BoxDecoration(
-                            color: Color(0xFFE9EFED),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.search_off_rounded,
-                            size: 52,
-                            color:
-                                Color(0xFF5E7D79),
-                          ),
-                        ),
-                        const SizedBox(height: 18),
-                        const Text(
-                          'Menu tidak ditemukan',
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight:
-                                FontWeight.bold,
-                            color:
-                                Color(0xFF252929),
-                          ),
-                        ),
-                        const SizedBox(height: 7),
-                        const Text(
-                          'Coba gunakan kata kunci atau filter lain.',
-                          textAlign:
-                              TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color:
-                                Color(0xFF858B8A),
-                            height: 1.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  LayoutBuilder(
-                    builder:
-                        (context, constraints) {
-                      int jumlahKolom;
-
-                      if (constraints.maxWidth <
-                          600) {
-                        jumlahKolom = 1;
-                      } else if (constraints
-                              .maxWidth <
-                          900) {
-                        jumlahKolom = 2;
-                      } else {
-                        jumlahKolom = 3;
-                      }
-
-                      return GridView.builder(
-                        shrinkWrap: true,
-                        physics:
-                            const NeverScrollableScrollPhysics(),
-                        padding:
-                            const EdgeInsets.fromLTRB(
-                          18,
-                          0,
-                          18,
-                          20,
-                        ),
-                        itemCount:
-                            menuTampil.length,
-                        gridDelegate:
-                            SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount:
-                              jumlahKolom,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 14,
-                          mainAxisExtent: 265,
-                        ),
-                        itemBuilder:
-                            (context, index) {
-                          final Pesanan pesanan =
-                              menuTampil[index];
-
-                          return MenuCard(
-                            menu: pesanan.menu,
-                            jumlahPesanan:
-                                pesanan.jumlah,
-                            onTambah: () {
-                              tambahPesanan(
-                                pesanan,
-                              );
-                            },
-                            onKurang: () {
-                              kurangPesanan(
-                                pesanan,
-                              );
-                            },
-                            onBatasStok: () {
-                              tampilkanPeringatanStok(
-                                pesanan,
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
               ],
             ),
           ),
-          AnimatedSwitcher(
-            duration:
-                const Duration(milliseconds: 250),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            child: adaPesanan
-                ? Padding(
-                    key: const ValueKey(
-                      'total-pesanan',
-                    ),
-                    padding:
-                        const EdgeInsets.fromLTRB(
-                      14,
-                      0,
-                      14,
-                      14,
-                    ),
-                    child: Container(
-                      width: double.infinity,
-                      padding:
-                          const EdgeInsets.fromLTRB(
-                        15,
-                        12,
-                        15,
-                        12,
-                      ),
-                      decoration: BoxDecoration(
-                        color:
-                            const Color(0xFF1F5C5B),
-                        borderRadius:
-                            BorderRadius.circular(18),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 16,
-                            offset: Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 36,
-                                height: 36,
-                                decoration:
-                                    BoxDecoration(
-                                  color: Colors.white
-                                      .withValues(
-                                    alpha: 0.15,
-                                  ),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons
-                                      .receipt_long_rounded,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              const Expanded(
-                                child: Text(
-                                  'Ringkasan Pesanan',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight:
-                                        FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding:
-                                    const EdgeInsets
-                                        .symmetric(
-                                  horizontal: 10,
-                                  vertical: 6,
-                                ),
-                                decoration:
-                                    BoxDecoration(
-                                  color: Colors.white
-                                      .withValues(
-                                    alpha: 0.12,
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.circular(
-                                    12,
-                                  ),
-                                ),
-                                child: Text(
-                                  '${hitungJumlahItem()} item',
-                                  style:
-                                      const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight:
-                                        FontWeight.w600,
-                                    color:
-                                        Color(0xFFDCEBE8),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              const Text(
-                                'Subtotal',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color:
-                                      Color(0xFFCDE0DC),
-                                ),
-                              ),
-                              Text(
-                                'Rp${formatRupiah(subtotalPesanan)}',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              Text(
-                                diskonPesanan > 0
-                                    ? 'Diskon 10%'
-                                    : 'Diskon 10% mulai 5 porsi',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: diskonPesanan > 0
-                                      ? const Color(
-                                          0xFFFFD7C8,
-                                        )
-                                      : const Color(
-                                          0xFFCDE0DC,
-                                        ),
-                                ),
-                              ),
-                              Text(
-                                diskonPesanan > 0
-                                    ? '-Rp${formatRupiah(diskonPesanan)}'
-                                    : 'Rp0',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight:
-                                      FontWeight.w600,
-                                  color: diskonPesanan > 0
-                                      ? const Color(
-                                          0xFFFFD7C8,
-                                        )
-                                      : const Color(
-                                          0xFFCDE0DC,
-                                        ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Container(
-                            height: 1,
-                            color: Colors.white
-                                .withValues(
-                              alpha: 0.12,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            children: [
-                              const Text(
-                                'Total Pesanan',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color:
-                                      Color(0xFFCDE0DC),
-                                ),
-                              ),
-                              Text(
-                                'Rp${formatRupiah(totalAkhir)}',
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight:
-                                      FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : const SizedBox(
-                    key: ValueKey(
-                      'tanpa-total',
-                    ),
-                  ),
+          Expanded(
+            child: menuTampil.isEmpty
+                ? tampilanKosong()
+                : gridMenu(menuTampil),
+          ),
+          ringkasanPesanan(
+            adaPesanan: adaPesanan,
+            subtotalPesanan: subtotalPesanan,
+            diskonPesanan: diskonPesanan,
+            totalAkhir: totalAkhir,
           ),
         ],
       ),
